@@ -265,6 +265,26 @@ pub mod exp {
 pub mod v1 {
     use super::*;
 
+    #[get("/aloha/{account_id}")]
+    pub async fn aloha(
+        request: HttpRequest,
+        _app_state: web::Data<AppState>,
+    ) -> Result<impl Responder, ServiceError> {
+        let account_id: AccountId =
+          AccountId::try_from(request.match_info().get("account_id").unwrap().to_string())
+            .map_err(|_| ServiceError::ArgumentError)?;
+
+        tracing::debug!(target: TARGET_API, "Looking up hello/love/goodbye for account_id: {}", account_id);
+
+        let honua = "honua".to_string();
+        let hardcoded = "hardcoded bro".to_string();
+
+        Ok(web::Json(json!({
+            "aloha": honua,
+            "totally": hardcoded,
+        })))
+    }
+
     #[get("/account/{account_id}/staking")]
     pub async fn staking(
         request: HttpRequest,
